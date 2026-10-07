@@ -154,7 +154,14 @@ EOF
 
     # Setting up user environment
     if [ -d "/home/${LIVE_USERNAME}" ]; then
-        for DIR in Desktop Documents Downloads Music Pictures Public Templates Videos; do
+        # XFCE images keep a minimal home: only Desktop and Downloads.
+        # Other desktops keep the full XDG directory set.
+        if pkg_is_installed "xfce4-session"; then
+            DEFAULT_HOME_DIRS="Desktop Downloads"
+        else
+            DEFAULT_HOME_DIRS="Desktop Documents Downloads Music Pictures Public Templates Videos"
+        fi
+        for DIR in ${DEFAULT_HOME_DIRS}; do
             mkdir -p "/home/${LIVE_USERNAME}/$DIR" || echo "Failed to create /home/${LIVE_USERNAME}/$DIR"
         done
         chown ${LIVE_USERNAME}:${LIVE_USERNAME} /home/${LIVE_USERNAME} || echo "Failed to set ownership for /home/${LIVE_USERNAME}"
